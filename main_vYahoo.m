@@ -20,7 +20,7 @@ msg_final = "";
 %---------------------------------------------------------------------%
 
 %% ========= Descarga UNA VEZ: Yahoo =========
-basePath = pwd;
+basePath = 'C:\Users\israe\OneDrive\Matlab_scripts\Shewhart_';
 
 % Tabla de tickers (clave lógica, símbolo Yahoo, nombre de fichero)
 tickers = {
@@ -150,8 +150,7 @@ dinero_final_lump = dinero_inicial / data(1) * data(end);
 entradas_3s = []; entradas_2s = [];
 try
     [entradas_3s, entradas_2s, tasa, media_sh, sigma_t] = Shewhart(data);
-    %plotGraficoShewhart_tasa(tasa, media_sh, sigma_t); %removed for the
-    %web version
+    plotGraficoShewhart_tasa(tasa, media_sh, sigma_t);
 catch ME
     warning('Plot Shewhart omitido (%s). Sigo con el cálculo.', ME.message);
     [entradas_3s, entradas_2s, ~, ~, ~] = Shewhart(data);
@@ -252,8 +251,8 @@ fprintf("\n====================================================================\
 % ===== Gráficas =====
 try
     [mm200, mm150, mm100, mm50] = Medias_Moviles(datamm, data);
-    % plotMediasMoviles(mm200, mm150, mm100, mm50, periodos, data, entradas_3s, entradas_2s, bloqueos, media_movil_lenta,asset,volumen,vix,entradas_2mmvix,vix_umbral);
-    % plotMediasMoviles_bb(mm200, mm150, mm100, mm50, periodos, data, entradas_bb,asset, N_bollinger,bb_sigma,bb_sup,bb_inf,2,volumen,vix,entradas_fitradas_bbmmvix,vix_umbral);
+    plotMediasMoviles(mm200, mm150, mm100, mm50, periodos, data, entradas_3s, entradas_2s, bloqueos, media_movil_lenta,asset,volumen,vix,entradas_2mmvix,vix_umbral);
+    plotMediasMoviles_bb(mm200, mm150, mm100, mm50, periodos, data, entradas_bb,asset, N_bollinger,bb_sigma,bb_sup,bb_inf,2,volumen,vix,entradas_fitradas_bbmmvix,vix_umbral);
 catch ME
     warning('Se omitieron algunas gráficas (%s).', ME.message);
 end
