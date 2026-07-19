@@ -1,0 +1,31 @@
+name: Ejecucion Diaria Script Shewhart
+
+on:
+  schedule:
+    # Se ejecuta de lunes a viernes a las 22:30 UTC
+    - cron: '30 22 * * 1-5'
+  workflow_dispatch: # Esto te permite darle a un botón para probarlo cuando quieras
+
+jobs:
+  run-matlab:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v4
+
+    - name: Set up MATLAB
+      uses: matlab-actions/setup-matlab@v2
+      with:
+        products: |
+          MATLAB
+          Statistics_and_Machine_Learning_Toolbox
+          Financial_Toolbox
+
+    - name: Run MATLAB Script
+      uses: matlab-actions/run-command@v2
+      env:
+        EMAIL_USER: ${{ secrets.EMAIL_USER }}
+        EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+      with:
+        command: main_vYahoo
