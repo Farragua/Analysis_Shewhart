@@ -13,7 +13,7 @@ jobs:
     # PONEMOS LAS VARIABLES AQUÍ (A nivel global de todo el proceso)
     env:
       EMAIL_USER: ${{ secrets.EMAIL_USER }}
-      EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+      EMAIL_PASS: ${{ secrets.EMAIL_PASSWORD }}
 
     steps:
     - name: Check out repository
