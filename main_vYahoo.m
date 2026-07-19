@@ -17,10 +17,16 @@ N_bollinger         = 30;                   % periodos de bollinger
 max_cash_por_dia    = 3000;                 % maximo a invertir cada dia para las event driven. Solo aplica en las V1!
 z_engine = 'shewhart_tippett';   % 'shewhart_tippett' | 'bollinger'
 msg_final = "";
+header_msg = "";
 %---------------------------------------------------------------------%
 
 %% ========= Descarga UNA VEZ: Yahoo =========
-basePath = 'C:\Users\israe\OneDrive\Matlab_scripts\Shewhart_';
+% Forzar la ruta de ejecución correcta en GitHub o en Local
+if ~isempty(getenv('GITHUB_WORKSPACE'))
+    basePath = getenv('GITHUB_WORKSPACE'); % La ruta absoluta segura en los servidores de GitHub
+else
+    basePath = pwd; % Tu carpeta local en tu PC de escritorio
+end
 
 % Tabla de tickers (clave lógica, símbolo Yahoo, nombre de fichero)
 tickers = {
@@ -84,13 +90,12 @@ for i = 1:size(tickers,1)
     paths(key) = fp;
 end
 
+
 % === Elegir activo para evaluar ===
 %asset = "VST";  % <- cambia aquí: 'SPY','IWM','GLD','TLT','SHY','NA9','MSFT','GOOGL','META'
-%assets = ["MSFT","GOOGL","META","AMZN","MA","V","ASTS","VST","UBER"];
-assets = ["MSFT"];
+assets = ["MSFT","GOOGL","META","AMZN","MA","V","ASTS","VST","UBER","GLD"];
 
 n_iteraciones=length(assets);
-
 
 for i=1:n_iteraciones
 asset=assets(i)
@@ -150,7 +155,8 @@ dinero_final_lump = dinero_inicial / data(1) * data(end);
 entradas_3s = []; entradas_2s = [];
 try
     [entradas_3s, entradas_2s, tasa, media_sh, sigma_t] = Shewhart(data);
-    plotGraficoShewhart_tasa(tasa, media_sh, sigma_t);
+    %plotGraficoShewhart_tasa(tasa, media_sh, sigma_t); %removed for the
+    %web version
 catch ME
     warning('Plot Shewhart omitido (%s). Sigo con el cálculo.', ME.message);
     [entradas_3s, entradas_2s, ~, ~, ~] = Shewhart(data);
@@ -251,8 +257,8 @@ fprintf("\n====================================================================\
 % ===== Gráficas =====
 try
     [mm200, mm150, mm100, mm50] = Medias_Moviles(datamm, data);
-    plotMediasMoviles(mm200, mm150, mm100, mm50, periodos, data, entradas_3s, entradas_2s, bloqueos, media_movil_lenta,asset,volumen,vix,entradas_2mmvix,vix_umbral);
-    plotMediasMoviles_bb(mm200, mm150, mm100, mm50, periodos, data, entradas_bb,asset, N_bollinger,bb_sigma,bb_sup,bb_inf,2,volumen,vix,entradas_fitradas_bbmmvix,vix_umbral);
+    % plotMediasMoviles(mm200, mm150, mm100, mm50, periodos, data, entradas_3s, entradas_2s, bloqueos, media_movil_lenta,asset,volumen,vix,entradas_2mmvix,vix_umbral);
+    % plotMediasMoviles_bb(mm200, mm150, mm100, mm50, periodos, data, entradas_bb,asset, N_bollinger,bb_sigma,bb_sup,bb_inf,2,volumen,vix,entradas_fitradas_bbmmvix,vix_umbral);
 catch ME
     warning('Se omitieron algunas gráficas (%s).', ME.message);
 end
@@ -316,14 +322,71 @@ fprintf("\n====================================================================\
 
 
 
-[msg] = sendNotification(asset, data, entradas_2smm, entradas_2mmvix,vix,mm200(end));
+[msg] = sendNotification(asset, data, entradas_2smm, entradas_2mmvix,mm200(end));
 fprintf('%s\n', msg)
 
 msg_final = msg_final + msg + newline;
 
 end
 fprintf("\n")
-fprintf(msg_final)
+
+% =========================================================================
+% CREACIÓN DEL HEADER Y CONCATENACIÓN FINAL
+% =========================================================================
+
+% 1. Creamos las variables de la cabecera
+fecha_cabecera = datestr(now, 'dd-mmm-yyyy');
+vix_actual = vix(end); % Ahora que el bucle terminó, 'vix' ya contiene datos
+
+% 2. Construimos el header usando corchetes [] para evitar el error de tamaños
+header_msg = [ ...
+    '=========================================\n', ...
+    sprintf('📅 DATE: %s\n', fecha_cabecera), ...
+    sprintf('📈 VIX INDEX: %.2f\n', vix_actual), ...
+    '=========================================\n\n' ...
+];
+
+% 3. Concatenamos el header AL PRINCIPIO del msg_final acumulado
+msg_final = header_msg + msg_final;
+
+% 4. Mostramos el resultado en la consola de GitHub
+fprintf(msg_final);
+
+
+% =========================================================================
+% ENVÍO DE CORREO:
+% =========================================================================
+
+% 1. Extraer las credenciales ocultas de los Secrets de GitHub
+mail_remitente   = getenv('EMAIL_USER');
+password_envio   = getenv('EMAIL_PASS');
+mail_destinatario = 'icg1408@gmail.com'; % <- Pon tu correo aquí
+
+% mail_destinatario = {'tu_correo_personal@gmail.com', ...
+%                      'socio1_trading@gmail.com', ...
+%                      'amigo2@hotmail.com'};
+
+% 2. Configurar las propiedades del servidor de correo (Gmail)
+setpref('Internet', 'SMTP_Server', 'smtp.gmail.com');
+setpref('Internet', 'SMTP_Username', mail_remitente);
+setpref('Internet', 'SMTP_Password', password_envio);
+
+% 3. Configurar la seguridad TLS
+props = java.lang.System.getProperties;
+props.setProperty('mail.smtp.auth', 'true');
+props.setProperty('mail.smtp.starttls.enable', 'true');
+props.setProperty('mail.smtp.port', '587');
+
+% 4. Enviar el correo siempre (una vez al día) al terminar el análisis
+asunto = ['📊 Reporte Diario de Trading - ', datestr(now, 'yyyy-mm-dd')];
+
+try
+    sendmail(mail_destinatario, asunto, msg_final);
+    disp('✉️ Correo diario enviado con éxito desde la nube.');
+catch ME
+    warning('❌ Error al enviar el correo: %s', ME.message);
+end
+
 
 %------------------------------------------------------------------------------------------------------------------------
 %% PORTFOLIO ANALYSIS:
@@ -490,7 +553,10 @@ function yahoo_chart_to_csv(ticker, outPath, p1, p2)
     dt.TimeZone = ''; % naive
 
     % Escribir CSV con cabecera sin espacios en AdjClose
-    fid = fopen(outPath,'w');
+    [fid, msg_err] = fopen(outPath,'w');
+    if fid < 0
+    error('No se pudo abrir el archivo para escribir: %s. Razón: %s', outPath, msg_err);
+    end
     fprintf(fid,'Date,Open,High,Low,Close,AdjClose,Volume\n');
     for i=1:n
         if ~isnan(cl(i)) && ~isnat(dt(i))
