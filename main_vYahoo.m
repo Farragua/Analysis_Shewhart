@@ -366,6 +366,17 @@ mail_destinatario = 'icg1408@gmail.com'; % <- Pon tu correo aquí
 %                      'socio1_trading@gmail.com', ...
 %                      'amigo2@hotmail.com'};
 
+
+% Control defensivo por si GitHub no inyectó bien las variables
+if isempty(mail_remitente) || isempty(password_envio)
+    error('Las credenciales de correo desde los Secrets de GitHub llegaron VACÍAS a MATLAB.');
+end
+
+% Forzar a que sean cadenas de texto limpias (elimina espacios invisibles)
+mail_remitente = strtrim(char(mail_remitente));
+password_envio = strtrim(char(password_envio));
+
+
 % 2. Configurar las propiedades del servidor de correo (Gmail)
 setpref('Internet', 'SMTP_Server', 'smtp.gmail.com');
 setpref('Internet', 'SMTP_Username', mail_remitente);
