@@ -353,56 +353,105 @@ msg_final = header_msg + msg_final;
 fprintf(msg_final);
 
 
+% % =========================================================================
+% % ENVÍO DE CORREO:
+% % =========================================================================
+% 
+% % 1. Extraer las credenciales ocultas de los Secrets de GitHub
+% mail_remitente   = getenv('EMAIL_USER');
+% password_envio   = getenv('EMAIL_PASS');
+% %mail_destinatario = 'icg1408@gmail.com'; % <- Pon tu correo aquí
+% 
+%  mail_destinatario = {'icg1408@gmail.com', ...
+%                       'pozo.dionisio@gmail.com', ...
+%                       'gustems.maestre@gmail.com'};                      
+% 
+% % mail_destinatario = 'ic1408@gmail.com, pozo.dionisio@gmail.com, gustems.maestre@gmail.com';
+% 
+% % 2. Convertimos la lista en una sola cadena de texto separada por comas
+% mail_destinatario = strjoin(mail_destinatario, ', ');
+% 
+% 
+% % Control defensivo por si GitHub no inyectó bien las variables
+% if isempty(mail_remitente) || isempty(password_envio)
+%     error('Las credenciales de correo desde los Secrets de GitHub llegaron VACÍAS a MATLAB.');
+% end
+% 
+% % Forzar a que sean cadenas de texto limpias (elimina espacios invisibles)
+% mail_remitente = strtrim(char(mail_remitente));
+% password_envio = strtrim(char(password_envio));
+% 
+% 
+% % 2. Configurar las propiedades del servidor de correo (Gmail)
+% setpref('Internet', 'SMTP_Server', 'smtp.gmail.com');
+% setpref('Internet', 'SMTP_Username', mail_remitente);
+% setpref('Internet', 'SMTP_Password', password_envio);
+% 
+% % 3. Configurar la seguridad TLS
+% props = java.lang.System.getProperties;
+% props.setProperty('mail.smtp.auth', 'true');
+% props.setProperty('mail.smtp.starttls.enable', 'true');
+% props.setProperty('mail.smtp.port', '587');
+% 
+% % 4. Enviar el correo siempre (una vez al día) al terminar el análisis
+% asunto = ['📊 Reporte Diario de Trading - ', datestr(now, 'yyyy-mm-dd')];
+% 
+% try
+%     sendmail(mail_destinatario, asunto, msg_final);
+%     disp('✉️ Correo diario enviado con éxito desde la nube.');
+% catch ME
+%     warning('❌ Error al enviar el correo: %s', ME.message);
+% end
+
+
 % =========================================================================
-% ENVÍO DE CORREO:
+% ENVÍO DE CORREO (MULTIDESTINATARIO COMPATIBLE)
 % =========================================================================
 
-% 1. Extraer las credenciales ocultas de los Secrets de GitHub
-mail_remitente   = getenv('EMAIL_USER');
-password_envio   = getenv('EMAIL_PASS');
-%mail_destinatario = 'icg1408@gmail.com'; % <- Pon tu correo aquí
+% 1. Extraer credenciales
+mail_remitente = getenv('EMAIL_USER');
+password_envio = getenv('EMAIL_PASS');
 
- mail_destinatario = {'icg1408@gmail.com', ...
-                      'pozo.dionisio@gmail.com', ...
-                      'gustems.maestre@gmail.com'};                      
+% 2. Lista de destinatarios en formato de celda limpia
+mail_destinatario = { ...
+    'icg1408@gmail.com', ...
+    'pozo.dionisio@gmail.com', ...
+    'gustems.maestre@gmail.com' ...
+};
 
-% mail_destinatario = 'ic1408@gmail.com, pozo.dionisio@gmail.com, gustems.maestre@gmail.com';
-
-% 2. Convertimos la lista en una sola cadena de texto separada por comas
-mail_destinatario = strjoin(mail_destinatario, ', ');
-
-
-% Control defensivo por si GitHub no inyectó bien las variables
+% Control defensivo de credenciales
 if isempty(mail_remitente) || isempty(password_envio)
     error('Las credenciales de correo desde los Secrets de GitHub llegaron VACÍAS a MATLAB.');
 end
 
-% Forzar a que sean cadenas de texto limpias (elimina espacios invisibles)
 mail_remitente = strtrim(char(mail_remitente));
 password_envio = strtrim(char(password_envio));
 
+% Limpiar espacios invisibles de cada correo de destino
+mail_destinatario = cellfun(@strtrim, mail_destinatario, 'UniformOutput', false);
 
-% 2. Configurar las propiedades del servidor de correo (Gmail)
+% 3. Configurar servidor SMTP de Gmail
 setpref('Internet', 'SMTP_Server', 'smtp.gmail.com');
 setpref('Internet', 'SMTP_Username', mail_remitente);
 setpref('Internet', 'SMTP_Password', password_envio);
 
-% 3. Configurar la seguridad TLS
+% 4. Configurar TLS
 props = java.lang.System.getProperties;
 props.setProperty('mail.smtp.auth', 'true');
 props.setProperty('mail.smtp.starttls.enable', 'true');
 props.setProperty('mail.smtp.port', '587');
+props.setProperty('mail.smtp.ssl.protocols', 'TLSv1.2');
 
-% 4. Enviar el correo siempre (una vez al día) al terminar el análisis
+% 5. Enviar el correo
 asunto = ['📊 Reporte Diario de Trading - ', datestr(now, 'yyyy-mm-dd')];
 
 try
+    % MATLAB maneja arreglos de celdas directamente en sendmail
     sendmail(mail_destinatario, asunto, msg_final);
-    disp('✉️ Correo diario enviado con éxito desde la nube.');
+    disp('✉️ Correo diario enviado con éxito a todos los destinatarios.');
 catch ME
     warning('❌ Error al enviar el correo: %s', ME.message);
 end
-
 
 %------------------------------------------------------------------------------------------------------------------------
 %% PORTFOLIO ANALYSIS:
