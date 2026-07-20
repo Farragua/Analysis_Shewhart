@@ -405,15 +405,15 @@ fprintf(msg_final);
 
 
 % =========================================================================
-% ENVÍO DE CORREO (MULTIDESTINATARIO COMPATIBLE)
+% ENVÍO DE CORREO MULTIDESTINATARIO (100% COMPATIBLE CON GMAIL / RFC 5322)
 % =========================================================================
 
-% 1. Extraer credenciales
+% 1. Extraer credenciales de GitHub Secrets
 mail_remitente = getenv('EMAIL_USER');
 password_envio = getenv('EMAIL_PASS');
 
-% 2. Lista de destinatarios en formato de celda limpia
-mail_destinatario = { ...
+% 2. Lista de destinatarios en celda
+lista_correos = { ...
     'icg1408@gmail.com', ...
     'pozo.dionisio@gmail.com', ...
     'gustems.maestre@gmail.com' ...
@@ -427,32 +427,32 @@ end
 mail_remitente = strtrim(char(mail_remitente));
 password_envio = strtrim(char(password_envio));
 
-% Limpiar espacios invisibles de cada correo de destino
-mail_destinatario = cellfun(@strtrim, mail_destinatario, 'UniformOutput', false);
+% 3. CONVERSIÓN RFC: Limpiamos espacios y unimos con coma exacta (sin espacios)
+lista_limpia = cellfun(@strtrim, lista_correos, 'UniformOutput', false);
+mail_destinatario_string = strjoin(lista_limpia, ','); 
 
-% 3. Configurar servidor SMTP de Gmail
+% 4. Configurar servidor SMTP de Gmail
 setpref('Internet', 'SMTP_Server', 'smtp.gmail.com');
 setpref('Internet', 'SMTP_Username', mail_remitente);
 setpref('Internet', 'SMTP_Password', password_envio);
 
-% 4. Configurar TLS
+% 5. Configurar TLS
 props = java.lang.System.getProperties;
 props.setProperty('mail.smtp.auth', 'true');
 props.setProperty('mail.smtp.starttls.enable', 'true');
 props.setProperty('mail.smtp.port', '587');
 props.setProperty('mail.smtp.ssl.protocols', 'TLSv1.2');
 
-% 5. Enviar el correo
+% 6. Enviar el correo
 asunto = ['📊 Reporte Diario de Trading - ', datestr(now, 'yyyy-mm-dd')];
 
 try
-    % MATLAB maneja arreglos de celdas directamente en sendmail
-    sendmail(mail_destinatario, asunto, msg_final);
+    % Se pasa la cadena de texto única (evita múltiples 'To:' headers)
+    sendmail(mail_destinatario_string, asunto, msg_final);
     disp('✉️ Correo diario enviado con éxito a todos los destinatarios.');
 catch ME
     warning('❌ Error al enviar el correo: %s', ME.message);
 end
-
 %------------------------------------------------------------------------------------------------------------------------
 %% PORTFOLIO ANALYSIS:
 %------------------------------------------------------------------------------------------------------------------------
