@@ -404,7 +404,7 @@ fprintf(msg_final);
 
 
 % =========================================================================
-% ENVÍO DE CORREO MULTIDESTINATARIO (A PRUEBA DE SECRETS Y RFC 5322)
+% ENVÍO DE CORREO (BUCLE INDIVIDUAL - A PRUEBA DE SECRETS Y RFC)
 % =========================================================================
 
 % 1. Extraer credenciales
@@ -418,38 +418,38 @@ end
 mail_remitente = strtrim(char(mail_remitente));
 password_envio = strtrim(char(password_envio));
 
-% 2. Lista de destinatarios: Usamos la variable 'mail_remitente' para el primer correo
+% 2. Lista de destinatarios en formato celda
 lista_correos = { ...
-    mail_remitente, ...          % <- En lugar de escribir tu correo a mano, usas la variable procesada
+    mail_remitente, ...        % Usa la variable del remitente directamente
     'pozo.dionisio@gmail.com', ...
     'gustems.maestre@gmail.com' ...
 };
 
-% 3. Limpiamos espacios y concatenamos con coma sin espacios extra
-lista_limpia = cellfun(@strtrim, lista_correos, 'UniformOutput', false);
-mail_destinatario_string = strjoin(lista_limpia, ',');
-
-% 4. Configurar servidor SMTP de Gmail
+% 3. Configurar servidor SMTP de Gmail
 setpref('Internet', 'SMTP_Server', 'smtp.gmail.com');
 setpref('Internet', 'SMTP_Username', mail_remitente);
 setpref('Internet', 'SMTP_Password', password_envio);
 
-% 5. Configurar TLS
+% 4. Configurar TLS
 props = java.lang.System.getProperties;
 props.setProperty('mail.smtp.auth', 'true');
 props.setProperty('mail.smtp.starttls.enable', 'true');
 props.setProperty('mail.smtp.port', '587');
 props.setProperty('mail.smtp.ssl.protocols', 'TLSv1.2');
 
-% 6. Enviar el correo
+% 5. Enviar el correo uno a uno
 asunto = ['📊 Reporte Diario de Trading - ', datestr(now, 'yyyy-mm-dd')];
 
-try
-    sendmail(mail_destinatario_string, asunto, msg_final);
-    disp('✉️ Correo diario enviado con éxito a todos los destinatarios.');
-catch ME
-    warning('❌ Error al enviar el correo: %s', ME.message);
+for k = 1:length(lista_correos)
+    destino_actual = strtrim(lista_correos{k});
+    try
+        sendmail(destino_actual, asunto, msg_final);
+        fprintf('✉️ Correo enviado con éxito a: %s\n', destino_actual);
+    catch ME
+        warning('❌ Error al enviar a %s: %s', destino_actual, ME.message);
+    end
 end
+
 %------------------------------------------------------------------------------------------------------------------------
 %% PORTFOLIO ANALYSIS:
 %------------------------------------------------------------------------------------------------------------------------
