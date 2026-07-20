@@ -48,7 +48,6 @@ tickers = {
     'AAPL',  'AAPL',    'AAPL_yahoo.csv';
     'TLT5.L',  'TLT5.L',    'TLT5_yahoo.csv';
     'NVDA',  'NVDA',    'NVDA_yahoo.csv';
-    'RACE.MI', 'RACE.MI', 'RACE_yahoo.csv';
     'ASTS' , 'ASTS', 'ASTS_yahoo.csv';
     'MA' , 'MA', 'MA_yahoo.csv';
     'RMS.PA' , 'RMS.PA', 'Hermes_yahoo.csv';
@@ -405,21 +404,13 @@ fprintf(msg_final);
 
 
 % =========================================================================
-% ENVÍO DE CORREO MULTIDESTINATARIO (100% COMPATIBLE CON GMAIL / RFC 5322)
+% ENVÍO DE CORREO MULTIDESTINATARIO (A PRUEBA DE SECRETS Y RFC 5322)
 % =========================================================================
 
-% 1. Extraer credenciales de GitHub Secrets
+% 1. Extraer credenciales
 mail_remitente = getenv('EMAIL_USER');
 password_envio = getenv('EMAIL_PASS');
 
-% 2. Lista de destinatarios en celda
-lista_correos = { ...
-    'icg1408@gmail.com', ...
-    'pozo.dionisio@gmail.com', ...
-    'gustems.maestre@gmail.com' ...
-};
-
-% Control defensivo de credenciales
 if isempty(mail_remitente) || isempty(password_envio)
     error('Las credenciales de correo desde los Secrets de GitHub llegaron VACÍAS a MATLAB.');
 end
@@ -427,9 +418,16 @@ end
 mail_remitente = strtrim(char(mail_remitente));
 password_envio = strtrim(char(password_envio));
 
-% 3. CONVERSIÓN RFC: Limpiamos espacios y unimos con coma exacta (sin espacios)
+% 2. Lista de destinatarios: Usamos la variable 'mail_remitente' para el primer correo
+lista_correos = { ...
+    mail_remitente, ...          % <- En lugar de escribir tu correo a mano, usas la variable procesada
+    'pozo.dionisio@gmail.com', ...
+    'gustems.maestre@gmail.com' ...
+};
+
+% 3. Limpiamos espacios y concatenamos con coma sin espacios extra
 lista_limpia = cellfun(@strtrim, lista_correos, 'UniformOutput', false);
-mail_destinatario_string = strjoin(lista_limpia, ','); 
+mail_destinatario_string = strjoin(lista_limpia, ',');
 
 % 4. Configurar servidor SMTP de Gmail
 setpref('Internet', 'SMTP_Server', 'smtp.gmail.com');
@@ -447,7 +445,6 @@ props.setProperty('mail.smtp.ssl.protocols', 'TLSv1.2');
 asunto = ['📊 Reporte Diario de Trading - ', datestr(now, 'yyyy-mm-dd')];
 
 try
-    % Se pasa la cadena de texto única (evita múltiples 'To:' headers)
     sendmail(mail_destinatario_string, asunto, msg_final);
     disp('✉️ Correo diario enviado con éxito a todos los destinatarios.');
 catch ME
