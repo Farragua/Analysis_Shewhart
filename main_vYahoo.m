@@ -364,6 +364,7 @@ password_envio   = getenv('EMAIL_PASS');
 
  mail_destinatario = {'icg1408@gmail.com', ...
                       'pozo.dionisio@gmail.com', ...
+                      'gustems.maestre@gmail.com'
                       };
 
 
