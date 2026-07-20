@@ -364,8 +364,12 @@ password_envio   = getenv('EMAIL_PASS');
 
  mail_destinatario = {'icg1408@gmail.com', ...
                       'pozo.dionisio@gmail.com', ...
-                      'gustems.maestre@gmail.com'
-                      };
+                      'gustems.maestre@gmail.com'};                      };
+
+% mail_destinatario = 'ic1408@gmail.com, pozo.dionisio@gmail.com, gustems.maestre@gmail.com';
+
+% 2. Convertimos la lista en una sola cadena de texto separada por comas
+mail_destinatario = strjoin(lista_correos, ', ');
 
 
 % Control defensivo por si GitHub no inyectó bien las variables

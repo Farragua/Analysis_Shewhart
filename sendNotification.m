@@ -38,35 +38,84 @@
 % end
 
 
+% function [msg] = sendNotification(asset, data, entradas_2smm, entradas_2mmvix, mm200)
+%     today_idx = length(data);
+%     precio_actual = data(today_idx);
+% 
+%     % 1. Calcular la diferencia porcentual respecto a la MA200
+%     diff_pct = ((precio_actual - mm200) / mm200) * 100;
+% 
+%     % 2. Formatear el porcentaje con signo (+ si es positivo, - si es negativo)
+%     if diff_pct >= 0
+%         pct_str = sprintf('+%.2f%%', diff_pct);
+%     else
+%         pct_str = sprintf('%.2f%%', diff_pct); % El signo '-' se pone solo en números negativos
+%     end
+% 
+%     % Detectar si hoy hay señal de forma segura
+%     es_2smm = (~isempty(entradas_2smm) && entradas_2smm(end) == today_idx);
+%     es_2mmvix = (~isempty(entradas_2mmvix) && entradas_2mmvix(end) == today_idx);
+% 
+%     % 3. Construir el mensaje incluyendo el % respecto a la MA200
+%     if es_2smm
+%         msg = sprintf('🟢 [%s] 🚨 BUY SIGNAL! (Strategy: 2smm)\n   ↳ Price: $%.2f  |  MA200: $%.2f (%s)\n', ...
+%             upper(asset), precio_actual, mm200, pct_str);
+% 
+%     elseif es_2mmvix
+%         msg = sprintf('🔥 [%s] 🚨 AGGRESSIVE BUY! (Strategy: 2smm + VIX)\n   ↳ Price: $%.2f  |  MA200: $%.2f (%s)\n', ...
+%             upper(asset), precio_actual, mm200, pct_str);
+% 
+%     else
+%         msg = sprintf('⚪ [%s] No signal (Price: $%.2f  |  MA200: $%.2f [%s])\n', ...
+%             upper(asset), precio_actual, mm200, pct_str);
+%     end
+% end
+
+
 function [msg] = sendNotification(asset, data, entradas_2smm, entradas_2mmvix, mm200)
     today_idx = length(data);
     precio_actual = data(today_idx);
 
-    % 1. Calcular la diferencia porcentual respecto a la MA200
-    diff_pct = ((precio_actual - mm200) / mm200) * 100;
-    
-    % 2. Formatear el porcentaje con signo (+ si es positivo, - si es negativo)
-    if diff_pct >= 0
-        pct_str = sprintf('+%.2f%%', diff_pct);
+    % 1. Variación diaria (respecto al día anterior)
+    if today_idx > 1
+        precio_ayer = data(today_idx - 1);
+        var_diaria = ((precio_actual - precio_ayer) / precio_ayer) * 100;
     else
-        pct_str = sprintf('%.2f%%', diff_pct); % El signo '-' se pone solo en números negativos
+        var_diaria = 0; % Por seguridad si solo hubiera 1 dato
     end
 
-    % Detectar si hoy hay señal de forma segura
+    % Formatear variación diaria con signo (+/-)
+    if var_diaria >= 0
+        str_var = sprintf('+%.2f%%%%', var_diaria);
+    else
+        str_var = sprintf('%.2f%%%%', var_diaria);
+    end
+
+    % 2. Diferencia porcentual respecto a la MA200
+    diff_ma200 = ((precio_actual - mm200) / mm200) * 100;
+    
+    % Formatear distancia a MA200 con signo (+/-)
+    if diff_ma200 >= 0
+        str_ma200 = sprintf('+%.2f%%%%', diff_ma200);
+    else
+        str_ma200 = sprintf('%.2f%%%%', diff_ma200);
+    end
+
+    % 3. Detectar si hoy hay señal activa
     es_2smm = (~isempty(entradas_2smm) && entradas_2smm(end) == today_idx);
     es_2mmvix = (~isempty(entradas_2mmvix) && entradas_2mmvix(end) == today_idx);
 
-    % 3. Construir el mensaje incluyendo el % respecto a la MA200
+    % 4. Construir el mensaje formateado
     if es_2smm
-        msg = sprintf('🟢 [%s] 🚨 BUY SIGNAL! (Strategy: 2smm)\n   ↳ Price: $%.2f  |  MA200: $%.2f (%s)\n', ...
-            upper(asset), precio_actual, mm200, pct_str);
+        msg = sprintf('🟢 [%s] 🚨 BUY SIGNAL! (Strategy: 2smm)\n   ↳ Price: $%.2f (%s)  |  MA200: $%.2f [%s]\n\n', ...
+            upper(asset), precio_actual, str_var, mm200, str_ma200);
             
     elseif es_2mmvix
-        msg = sprintf('🔥 [%s] 🚨 AGGRESSIVE BUY! (Strategy: 2smm + VIX)\n   ↳ Price: $%.2f  |  MA200: $%.2f (%s)\n', ...
-            upper(asset), precio_actual, mm200, pct_str);
+        msg = sprintf('🔥 [%s] 🚨 AGGRESSIVE BUY! (Strategy: 2smm + VIX)\n   ↳ Price: $%.2f (%s)  |  MA200: $%.2f [%s]\n\n', ...
+            upper(asset), precio_actual, str_var, mm200, str_ma200);
             
     else
-        msg = sprintf('⚪ [%s] No signal (Price: $%.2f  |  MA200: $%.2f [%s])\n', ...
-            upper(asset), precio_actual, mm200, pct_str);
+        msg = sprintf('⚪ [%s] No signal (Price: $%.2f (%s)  |  MA200: $%.2f [%s])\n\n', ...
+            upper(asset), precio_actual, str_var, mm200, str_ma200);
     end
 end
