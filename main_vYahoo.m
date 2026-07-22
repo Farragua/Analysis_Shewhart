@@ -31,14 +31,14 @@ end
 % Tabla de tickers (clave lógica, símbolo Yahoo, nombre de fichero)
 tickers = {
     'SPY',   'SPY',     'SPY_yahoo.csv';
-    'IWM',   'IWM',     'IWM_yahoo.csv';      % RU = IWM
+%    'IWM',   'IWM',     'IWM_yahoo.csv';      % RU = IWM
     'GLD',   'GLD',     'GLD_yahoo.csv';
-    'TLT',   'TLT',     'TLT_yahoo.csv';
-    'SHY',   'SHY',     'SHY_yahoo.csv';
+%    'TLT',   'TLT',     'TLT_yahoo.csv';
+%    'SHY',   'SHY',     'SHY_yahoo.csv';
     'VIX',   '^VIX',    'VIX_yahoo.csv';
-    'IEF',   'IEF',     'IEF_yahoo.csv';
-    'DBC',   'DBC',     'DBC_yahoo.csv';
-    'BTC-USD',   'BTC-USD',     'BTC-USD_yahoo.csv';
+%    'IEF',   'IEF',     'IEF_yahoo.csv';
+%    'DBC',   'DBC',     'DBC_yahoo.csv';
+%    'BTC-USD',   'BTC-USD',     'BTC-USD_yahoo.csv';
     % Extras
     'MSFT',  'MSFT',    'MSFT_yahoo.csv';
     'GOOGL', 'GOOGL',   'GOOGL_yahoo.csv';
@@ -46,23 +46,25 @@ tickers = {
     'AMZN',  'AMZN',    'AMZN_yahoo.csv';
     'QQQ',  'QQQ',    'QQQ_yahoo.csv';
     'AAPL',  'AAPL',    'AAPL_yahoo.csv';
-    'TLT5.L',  'TLT5.L',    'TLT5_yahoo.csv';
     'NVDA',  'NVDA',    'NVDA_yahoo.csv';
     'ASTS' , 'ASTS', 'ASTS_yahoo.csv';
     'MA' , 'MA', 'MA_yahoo.csv';
-    'RMS.PA' , 'RMS.PA', 'Hermes_yahoo.csv';
-    'VST' , 'VST', 'Vistra_yahoo.csv';
+%    'RMS.PA' , 'RMS.PA', 'Hermes_yahoo.csv';
+%    'VST' , 'VST', 'Vistra_yahoo.csv';
     'V', 'V', 'Visa_yahoo.csv';
     'UBER', 'UBER', 'UBER_yahoo.csv';
+    'MCD', 'MCD', 'Mcdonalds_yahoo.csv';
+    'AENA.MC', 'AENA.MC', 'Aena_yahoo.csv';
+
 
 
     % Biotecnologicas especulativas
-    'VKTX' , 'VKTX', 'VKTX_yahoo.csv';
-    'KRMD' , 'KRMD', 'KRMD_yahoo.csv';
+    % 'VKTX' , 'VKTX', 'VKTX_yahoo.csv';
+    % 'KRMD' , 'KRMD', 'KRMD_yahoo.csv';
     'SLS' , 'SLS', 'SLS_yahoo.csv';
-    'VANI' , 'VANI', 'VANI_yahoo.csv';
-    'RANI' , 'RANI', 'RANI_yahoo.csv';
-    'DFTX' , 'DFTX', 'DFTX_yahoo.csv';
+    % 'VANI' , 'VANI', 'VANI_yahoo.csv';
+    % 'RANI' , 'RANI', 'RANI_yahoo.csv';
+    % 'DFTX' , 'DFTX', 'DFTX_yahoo.csv';
 
 
     
@@ -92,7 +94,7 @@ end
 
 % === Elegir activo para evaluar ===
 %asset = "VST";  % <- cambia aquí: 'SPY','IWM','GLD','TLT','SHY','NA9','MSFT','GOOGL','META'
-assets = ["MSFT","GOOGL","META","AMZN","MA","V","ASTS","VST","UBER","GLD"];
+assets = ["MSFT","GOOGL","META","AMZN","MA","V","ASTS","SLS","UBER","MCD","AENA.MC","GLD"];
 
 n_iteraciones=length(assets);
 
