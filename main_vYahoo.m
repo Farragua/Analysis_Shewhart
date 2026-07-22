@@ -41,7 +41,7 @@ tickers = {
 %    'BTC-USD',   'BTC-USD',     'BTC-USD_yahoo.csv';
     % Extras
     'MSFT',  'MSFT',    'MSFT_yahoo.csv';
-    'GOOGL', 'GOOGL',   'GOOGL_yahoo.csv';
+    'GOOG', 'GOOG',   'GOOG_yahoo.csv';
     'META',  'META',    'META_yahoo.csv';
     'AMZN',  'AMZN',    'AMZN_yahoo.csv';
     'QQQ',  'QQQ',    'QQQ_yahoo.csv';
@@ -94,7 +94,7 @@ end
 
 % === Elegir activo para evaluar ===
 %asset = "VST";  % <- cambia aquí: 'SPY','IWM','GLD','TLT','SHY','NA9','MSFT','GOOGL','META'
-assets = ["MSFT","GOOGL","META","AMZN","MA","V","ASTS","SLS","UBER","MCD","AENA.MC","GLD"];
+assets = ["MSFT","GOOG","META","AMZN","MA","V","ASTS","SLS","UBER","MCD","AENA.MC","GLD"];
 
 n_iteraciones=length(assets);
 
