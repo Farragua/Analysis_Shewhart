@@ -1,4 +1,4 @@
-function main_vYahoo
+function main_vYahoo_semanal
 clear; close all; clc;
 
 %------------------- Parámetros --------------------------------------%
@@ -323,7 +323,7 @@ fprintf("\n====================================================================\
 
 
 
-[msg] = sendNotification(asset, data, entradas_2smm, entradas_2mmvix,mm200(end));
+[msg] = notificacion_semanal(asset, data, entradas_2smm, entradas_2mmvix,mm200(end));
 fprintf('%s\n', msg)
 
 msg_final = msg_final + msg + newline;
