@@ -2,8 +2,8 @@ name: Ejecucion Diaria Script Shewhart
 
 on:
   schedule:
-    # Se ejecuta de lunes a viernes a las 19:30 UTC
-    - cron: '15 19 * * 1-5'
+    # Se ejecuta de lunes a viernes a las 19:14 UTC
+    - cron: '14 19 * * 1-5'
   workflow_dispatch: # Permite ejecutar manualmente
 
 jobs:
