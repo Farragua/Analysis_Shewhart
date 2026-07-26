@@ -440,7 +440,7 @@ props.setProperty('mail.smtp.port', '587');
 props.setProperty('mail.smtp.ssl.protocols', 'TLSv1.2');
 
 % 5. Enviar el correo uno a uno
-asunto = ['📊 Reporte Diario de Trading - ', datestr(now, 'yyyy-mm-dd')];
+asunto = ['📊 Reporte Semanal de Trading - ', datestr(now, 'yyyy-mm-dd')];
 
 for k = 1:length(lista_correos)
     destino_actual = strtrim(lista_correos{k});

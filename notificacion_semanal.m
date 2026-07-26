@@ -23,9 +23,9 @@ function [msg] = notificacion_semanal(asset, data, entradas_2smm, entradas_2mmvi
     % 2. Diferencia porcentual respecto a la MA200
     diff_ma200 = ((precio_actual - mm200) / mm200) * 100;
     if diff_ma200 >= 0
-        str_ma200 = sprintf('+%.2f%% vs MA200', diff_ma200);
+        str_ma200 = sprintf('+%.2f%%', diff_ma200);
     else
-        str_ma200 = sprintf('%.2f%% vs MA200', diff_ma200);
+        str_ma200 = sprintf('%.2f%%', diff_ma200);
     end
     
     % 3. Rango de la semana (últimas 5 sesiones bursátiles: Lunes a Viernes)
@@ -38,12 +38,12 @@ function [msg] = notificacion_semanal(asset, data, entradas_2smm, entradas_2mmvi
     % 4. Jerarquía de Criticidad (Prioridad: 🔥🟢 VIX > 🟢 2sigma > 🟡 Bajo MA200 > 🔴 Sin Señal)
     if hubo_2mmvix_semana
         % MÁXIMA CRITICIDAD: Hubo señal de compra agresiva (+ VIX) en la semana
-        msg = sprintf('🔥🟢 [%s] 🚨 WEEKLY AGGRESSIVE BUY! (Strategy: 2smm + VIX)\n   ↳ Price: $%.2f (%s)  |  MA200: $%.2f [%s]\n', ...
+        msg = sprintf('🔥🟢 [%s] 🚨 AGGRESSIVE BUY! (Strategy: 2smm + VIX)\n   ↳ Price: $%.2f (%s)  |  MA200: $%.2f [%s]\n', ...
             upper(asset), precio_actual, str_var, mm200, str_ma200);
             
     elseif hubo_2smm_semana
         % SEGUNDA CRITICIDAD: Hubo señal de compra normal (2sigma) en la semana
-        msg = sprintf('🟢 [%s] 🚨 WEEKLY BUY SIGNAL! (Strategy: 2smm)\n   ↳ Price: $%.2f (%s)  |  MA200: $%.2f [%s]\n', ...
+        msg = sprintf('🟢 [%s] 🚨 BUY SIGNAL! (Strategy: 2smm)\n   ↳ Price: $%.2f (%s)  |  MA200: $%.2f [%s]\n', ...
             upper(asset), precio_actual, str_var, mm200, str_ma200);
             
     elseif precio_actual < mm200
