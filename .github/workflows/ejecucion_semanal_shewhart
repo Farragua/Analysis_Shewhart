@@ -1,0 +1,32 @@
+name: Resumen Semanal Script Shewhart
+
+on:
+  schedule:
+    # Se ejecuta SOLO LOS DOMINGOS a las 20:28 UTC (22:28 hora en Alemania/España)
+    - cron: '00 12 * * 0'
+  workflow_dispatch: # Permite ejecutarlo manualmente cuando quieras
+
+jobs:
+  run-matlab-weekly:
+    runs-on: ubuntu-latest
+
+    env:
+      EMAIL_USER: ${{ secrets.EMAIL_USER }}
+      EMAIL_PASS: ${{ secrets.EMAIL_PASSWORD }}
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v4
+
+    - name: Set up MATLAB
+      uses: matlab-actions/setup-matlab@v2
+      with:
+        products: |
+          MATLAB
+          Statistics_and_Machine_Learning_Toolbox
+          Financial_Toolbox
+
+    - name: Run Weekly MATLAB Script
+      uses: matlab-actions/run-command@v2
+      with:
+        command: main_semanal
