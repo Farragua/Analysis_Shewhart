@@ -3,7 +3,7 @@ name: Resumen Semanal Script Shewhart
 on:
   schedule:
     # Se ejecuta SOLO LOS DOMINGOS a las 20:28 UTC (22:28 hora en Alemania/España)
-    - cron: '00 12 * * 0'
+    - cron: '00 11 * * 0'
   workflow_dispatch: # Permite ejecutarlo manualmente cuando quieras
 
 jobs:
@@ -29,4 +29,4 @@ jobs:
     - name: Run Weekly MATLAB Script
       uses: matlab-actions/run-command@v2
       with:
-        command: main_semanal
+        command: main_vYahoo_semanal
