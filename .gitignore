@@ -1,0 +1,9 @@
+# Datos descargados de Yahoo Finance (se regeneran en cada ejecución)
+*_yahoo.csv
+
+# Entorno virtual local
+.venv/
+
+# Cachés de Python
+__pycache__/
+*.pyc
