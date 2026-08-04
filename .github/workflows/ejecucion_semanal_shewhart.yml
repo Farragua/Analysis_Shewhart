@@ -7,7 +7,7 @@ on:
   workflow_dispatch: # Permite ejecutarlo manualmente cuando quieras
 
 jobs:
-  run-matlab-weekly:
+  run-python-weekly:
     runs-on: ubuntu-latest
 
     env:
@@ -18,15 +18,15 @@ jobs:
     - name: Check out repository
       uses: actions/checkout@v4
 
-    - name: Set up MATLAB
-      uses: matlab-actions/setup-matlab@v2
+    - name: Set up Python
+      uses: actions/setup-python@v5
       with:
-        products: |
-          MATLAB
-          Statistics_and_Machine_Learning_Toolbox
-          Financial_Toolbox
+        python-version: '3.13'
 
-    - name: Run Weekly MATLAB Script
-      uses: matlab-actions/run-command@v2
-      with:
-        command: main_vYahoo_semanal
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run Weekly Python Script
+      run: python main_vYahoo_semanal.py
