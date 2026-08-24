@@ -103,7 +103,7 @@ def main_vYahoo_semanal():
         paths[key] = fp
 
     # === Elegir activo para evaluar ===
-    assets = ["MSFT", "GOOG", "META", "AMZN", "MA", "V", "ASTS", "SLS", "UBER", "MCD", "AENA.MC", "GC=F"]
+    assets = ["MSFT", "GOOG", "META", "AMZN", "MA", "V", "ASTS", "SLS", "UBER", "MCD", "AENA.MC", "GC=F", "SPY"]
 
     n_iteraciones = len(assets)
 
