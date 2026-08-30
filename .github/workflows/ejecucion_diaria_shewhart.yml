@@ -2,15 +2,18 @@ name: Ejecucion Diaria Script Shewhart
 
 on:
   schedule:
-    # Se ejecuta de lunes a viernes a las 19:10 UTC
-    - cron: '30 19 * * 1-5'
+    # Se ejecuta de lunes a viernes a las 19:12 UTC (21:12 CEST local)
+    - cron: '12 19 * * 1-5'
   workflow_dispatch: # Permite ejecutar manualmente
+
+permissions:
+  contents: read
 
 jobs:
   run-python:
     runs-on: ubuntu-latest
 
-    # PONEMOS LAS VARIABLES AQUÍ (A nivel global de todo el proceso)
+    # Variables de entorno globales para el proceso
     env:
       EMAIL_USER: ${{ secrets.EMAIL_USER }}
       EMAIL_PASS: ${{ secrets.EMAIL_PASSWORD }}
